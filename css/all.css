@@ -348,9 +348,14 @@ input[type="submit"]:hover {
             justify-content: space-between; }
     .p-index .row .col {
       width: 300px;
-      color: white;
+      color: #EAF0ED;
       line-height: 1.5rem;
-      margin-bottom: 20px; }
+      margin-bottom: 20px;
+      -webkit-transition: -webkit-filter 1s, -webkit-box-shadow 1s 0.5s;
+      transition: -webkit-filter 1s, -webkit-box-shadow 1s 0.5s;
+      -o-transition: filter 1s, box-shadow 1s 0.5s;
+      transition: filter 1s, box-shadow 1s 0.5s;
+      transition: filter 1s, box-shadow 1s 0.5s, -webkit-filter 1s, -webkit-box-shadow 1s 0.5s; }
       .p-index .row .col > img {
         width: 100%;
         display: block; }
@@ -373,5 +378,11 @@ input[type="submit"]:hover {
         .p-index .row .col .descript .introduce {
           float: left;
           margin-top: 7px; }
+      .p-index .row .col:hover {
+        cursor: pointer;
+        -webkit-filter: brightness(1.4);
+                filter: brightness(1.4);
+        -webkit-box-shadow: 5px 5px 10px 5px #333;
+                box-shadow: 5px 5px 10px 5px #333; }
 
 /*# sourceMappingURL=all.css.map */
