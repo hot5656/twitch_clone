@@ -13,6 +13,8 @@ npm install gulp -g
 npm install
 // develop 
 gulp
+// rebuild
+gulp build
 // release
 // gulp --env production
 //publish contents to Github pages

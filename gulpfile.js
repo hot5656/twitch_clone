@@ -3,6 +3,8 @@ const $ = require('gulp-load-plugins')();
 const browserSync = require('browser-sync');
 const autoprefixer = require('autoprefixer');
 const minimist = require('minimist'); // 用來讀取指令轉成變數
+// add third js module
+const gulpSequence = require('gulp-sequence').use(gulp);
 
 // env process
 // production || development
@@ -126,11 +128,28 @@ gulp.task('ghpage', () => {
   return gulp.src('./public/**/*').pipe($.ghPages());
 });
 
+// add third js module
+gulp.task('vendorJs', () => {
+  return gulp
+    .src([
+      './node_modules/jquery/dist/jquery.min.js'
+    ])
+    .pipe($.concat('vendor.js'))
+    .pipe(gulp.dest('./public/js'));
+});
+
 // use ejs - include layout
 // gulp.task('default', ['copy', 'sass', 'layout', 'browserSync', 'watch']);
 
 // no use ejs - no include layout
-gulp.task('default', ['copy', 'sass', 'browserSync', 'watch']);
+// gulp.task('default', ['copy', 'sass', 'browserSync', 'watch']);
+// add third js module
+gulp.task('default', ['copy', 'sass', 'vendorJs', 'browserSync', 'watch']);
+
+// add build for re-build
+// add third js module
+gulp.task('build', gulpSequence('clean', 'copy', 'sass', 'vendorJs', 'sass'));
+
 
 
 
