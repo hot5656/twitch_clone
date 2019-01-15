@@ -377,7 +377,12 @@ input[type="submit"]:hover {
           float: left; }
         .p-index .row .col .descript .introduce {
           float: left;
-          margin-top: 7px; }
+          margin-top: 7px;
+          white-space: nowrap;
+          overflow: hidden;
+          -o-text-overflow: ellipsis;
+             text-overflow: ellipsis;
+          width: 220px; }
       .p-index .row .col:hover {
         cursor: pointer;
         -webkit-filter: brightness(1.4);
