@@ -1,11 +1,16 @@
 const clientId = 'qvtuq71csrlv5ipxo1ljzgbzqn1okh' ;
-const limitItem = 20;
-const apiUrl =  "https://api.twitch.tv/kraken/streams/?client_id=" + 
-									clientId +
-									"&game=League%20of%20Legends&limit=" +
-									limitItem ;
+const limitItem = 21;
+let offset = 0 ;
+let apiUrl;
+let isLoad = false ;
+let isLoadLastItem = false ;
+let liveCounter = 0 ;
 
 $(document).ready(function(){
+	apiUrl =  "https://api.twitch.tv/kraken/streams/?client_id=" + 
+						clientId +
+						"&game=League%20of%20Legends&limit=" +
+						limitItem + "&offset=" + offset ;
 	queryLive(procesLiveInfo) ;
 });
 
@@ -16,6 +21,7 @@ function queryLive(cb) {
 		url: apiUrl,
 		success: function(response){
 			console.log(response);
+			isLoad = true ;
 			cb(null, response);
 		},
 		error: function(err) {
@@ -31,6 +37,7 @@ function procesLiveInfo(err,data) {
 	else {
 		const streams =  data.streams;
 		const row = $('.row');
+		liveCounter = streams.length;
 		for (let i=0 ; i<streams.length ; i++ ) {
 			row.append(getColumn(streams[i]));
 		}
@@ -40,9 +47,13 @@ function procesLiveInfo(err,data) {
 function getColumn(data) {
 	return `
 	<div class="col">
-		<img class="preview" src="${data.preview.large}" alt="">
+		<div class="preview">
+			<img src="${data.preview.large}" onload="this.style.opacity=1" alt="">
+		</div>
 		<div class="descript">
-			<img class="avatar" src="${data.channel.logo}" alt="">
+			<div class="avatar">
+				<img src="${data.channel.logo}"  onload="this.style.opacity=1" alt="">
+			</div>
 			<div class="introduce">
 				<div class="ch-name">${data.channel.status}</div>
 				<div class="ch-master">${data.channel.name}</div>
@@ -51,3 +62,23 @@ function getColumn(data) {
 	</div>
 	`;
 }
+
+$(window).scroll(function(){
+	if ($(window).scrollTop()+$(window).height()+200 >= $(document).height()){
+		//console.log("scroll--->bottom");
+
+		if (liveCounter < limitItem) isLoadLastItem = true ;
+
+		if (isLoad &&  !isLoadLastItem){
+			isLoad = false ;
+
+			offset+= limitItem;
+			apiUrl =  "https://api.twitch.tv/kraken/streams/?client_id=" + 
+								clientId +
+								"&game=League%20of%20Legends&limit=" +
+								limitItem + "&offset=" + offset ;
+			queryLive(procesLiveInfo) ;
+			console.log("offset = " + offset);
+		}
+	}
+});
