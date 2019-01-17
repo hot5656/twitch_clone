@@ -5,17 +5,18 @@ let apiUrl;
 let isLoad = false ;
 let isLoadLastItem = false ;
 let liveCounter = 0 ;
+var languageType = "en" ;
 
 $(document).ready(function(){
-	apiUrl =  "https://api.twitch.tv/kraken/streams/?client_id=" + 
-						clientId +
-						"&game=League%20of%20Legends&limit=" +
-						limitItem + "&offset=" + offset ;
 	queryLive(procesLiveInfo) ;
 });
 
 
 function queryLive(cb) {
+	apiUrl =  "https://api.twitch.tv/kraken/streams/?client_id=" + clientId +
+						"&language=" + languageType + 
+						"&game=League%20of%20Legends&limit=" + limitItem + 
+						"&offset=" + offset ;
 	$.ajax({
 		dataType: "json",
 		url: apiUrl,
@@ -65,20 +66,27 @@ function getColumn(data) {
 
 $(window).scroll(function(){
 	if ($(window).scrollTop()+$(window).height()+200 >= $(document).height()){
-		//console.log("scroll--->bottom");
-
 		if (liveCounter < limitItem) isLoadLastItem = true ;
 
 		if (isLoad &&  !isLoadLastItem){
 			isLoad = false ;
 
 			offset+= limitItem;
-			apiUrl =  "https://api.twitch.tv/kraken/streams/?client_id=" + 
-								clientId +
-								"&game=League%20of%20Legends&limit=" +
-								limitItem + "&offset=" + offset ;
 			queryLive(procesLiveInfo) ;
 			console.log("offset = " + offset);
 		}
 	}
 });
+
+function language(lang) {
+	if (lang !== languageType) {
+		$('.row').empty();
+
+		// add i18n
+		document.querySelector(".head h1").textContent = window.I18N[lang].title;
+
+		languageType = lang;
+		offset = 0;
+		queryLive(procesLiveInfo) ;
+	}
+} 
