@@ -6,9 +6,24 @@ let isLoad = false ;
 let isLoadLastItem = false ;
 let liveCounter = 0 ;
 var languageType = "en" ;
+// webpack
+var i18n = {
+	en: require("./lang-en"),
+	'zh-tw': require("./lang-zh-tw")
+};
+var $ = require("jquery");
+
 
 $(document).ready(function(){
 	queryLive(procesLiveInfo) ;
+});
+
+$(".lang_en").click( function() {
+	language("en");
+});
+
+$(".lang_tw").click( function() {
+	language("zh-tw");
 });
 
 
@@ -21,7 +36,7 @@ function queryLive(cb) {
 		dataType: "json",
 		url: apiUrl,
 		success: function(response){
-			console.log(response);
+			// console.log(response);
 			isLoad = true ;
 			cb(null, response);
 		},
@@ -83,7 +98,10 @@ function language(lang) {
 		$('.row').empty();
 
 		// add i18n
-		document.querySelector(".head h1").textContent = window.I18N[lang].title;
+		// not webpack
+		// document.querySelector(".head h1").textContent = window.i18n[lang].title;
+		// webpack
+		document.querySelector(".head h1").textContent = i18n[lang].title;
 
 		languageType = lang;
 		offset = 0;
