@@ -7,6 +7,13 @@ const minimist = require('minimist'); // 用來讀取指令轉成變數
 const gulpSequence = require('gulp-sequence').use(gulp);
 // add webpack-stream
 const webpack = require('webpack-stream');
+// inject-css
+var styleInject = require("gulp-style-inject");
+// add debug
+var debug = require('gulp-debug');
+// inject-js
+const injectJs = require('gulp-inject-js');
+
 
 // env process
 // production || development
@@ -179,6 +186,49 @@ gulp.task('webpack', () => {
       }
     } ))
     .pipe(gulp.dest('./public/js'));
+});
+
+// minify css test
+gulp.task('minify-css', () => {
+  return gulp.src('./public/css/*.css')
+    .pipe(debug())
+    .pipe($.cleanCss({compatibility: 'ie8'}))
+    .pipe(gulp.dest('./public/minify-css'));
+});
+
+// minify js test
+gulp.task('minify-js', function() {
+  gulp.src(['./public/js/*.js'])
+    .pipe($.minify({
+      ext:{
+        src:'-debug.js',
+        min:'.js'
+      }
+    }))
+    .pipe(gulp.dest('./public/minify-js'))
+});
+
+// inject js and css
+gulp.task('inject', function() {
+  return gulp
+  .src("./public/*.html")
+  .pipe(debug())
+  .pipe(styleInject())
+  .pipe(debug())
+  .pipe(injectJs())
+	.pipe(gulp.dest("./public/final"));
+});
+
+// html minify test - just test html minify(can not run well)
+gulp.task('minifyhtml', function() {
+  return gulp
+  .src("./public/*.html")
+  .pipe(debug())
+  .pipe($.htmlmin({ 
+    collapseWhitespace: true,
+    removeComments: true
+  }))
+	.pipe(gulp.dest("./public/final"));
 });
 
 // use ejs - include layout
