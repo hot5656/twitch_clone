@@ -7,13 +7,8 @@ const minimist = require('minimist'); // 用來讀取指令轉成變數
 const gulpSequence = require('gulp-sequence').use(gulp);
 // add webpack-stream
 const webpack = require('webpack-stream');
-// inject-css
-var styleInject = require("gulp-style-inject");
 // add debug
-var debug = require('gulp-debug');
-// inject-js
-const injectJs = require('gulp-inject-js');
-
+const debug = require('gulp-debug');
 
 // env process
 // production || development
@@ -64,6 +59,7 @@ gulp.task('browserSync', () => {
 gulp.task('copy', () => {
   gulp
     .src(['./source/**/**', '!source/sass/**/**', '!source/js/**/**'])
+    .pipe(debug())
     .pipe(gulp.dest('./public/'))
     .pipe(
       browserSync.reload({
@@ -93,7 +89,7 @@ gulp.task('sass', () => {
       }).on('error', $.sass.logError),
     )
     .pipe($.postcss(processors))
-    .pipe($.if(options.env === 'production', $.cleanCss())) // 假設開發環境則壓縮 CSS
+    .pipe($.if(options.env === 'production', $.cleanCss({compatibility: 'ie8'}))) // 假設開發環境則壓縮 CSS
     .pipe($.sourcemaps.write('.'))
     .pipe(gulp.dest('./public/css'))
     .pipe(
@@ -185,50 +181,28 @@ gulp.task('webpack', () => {
         ]
       }
     } ))
+    .pipe($.if(options.env === 'production', 
+      $.minify({
+        ext:{
+          src:'-debug.js',
+          min:'.js'
+        }
+      })
+    ))
     .pipe(gulp.dest('./public/js'));
 });
 
-// minify css test
-gulp.task('minify-css', () => {
-  return gulp.src('./public/css/*.css')
-    .pipe(debug())
-    .pipe($.cleanCss({compatibility: 'ie8'}))
-    .pipe(gulp.dest('./public/minify-css'));
-});
-
-// minify js test
-gulp.task('minify-js', function() {
-  gulp.src(['./public/js/*.js'])
-    .pipe($.minify({
-      ext:{
-        src:'-debug.js',
-        min:'.js'
-      }
-    }))
-    .pipe(gulp.dest('./public/minify-js'))
-});
-
-// inject js and css
-gulp.task('inject', function() {
-  return gulp
-  .src("./public/*.html")
-  .pipe(debug())
-  .pipe(styleInject())
-  .pipe(debug())
-  .pipe(injectJs())
-	.pipe(gulp.dest("./public/final"));
-});
-
-// html minify test - just test html minify(can not run well)
-gulp.task('minifyhtml', function() {
-  return gulp
-  .src("./public/*.html")
-  .pipe(debug())
-  .pipe($.htmlmin({ 
-    collapseWhitespace: true,
-    removeComments: true
-  }))
-	.pipe(gulp.dest("./public/final"));
+// inject css/js and minify html
+gulp.task('inline', function () {
+  return gulp.src('./public/*.html')
+      .pipe(debug())
+      .pipe($.inline())
+      .pipe(debug())
+      .pipe($.htmlmin({ 
+        collapseWhitespace: true,
+        removeComments: true
+      }))      
+      .pipe(gulp.dest('./public'));
 });
 
 // use ejs - include layout

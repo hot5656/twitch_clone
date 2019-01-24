@@ -8,22 +8,22 @@ npm install gulp -g
 
 ## 執行
 
-[demo site](https://hot5656.github.io/twitch_clone/final/index.html)
+[demo site](https://hot5656.github.io/twitch_clone/)
 ```
 npm install
 // develop 
 gulp
 // rebuild
 gulp build
-// inject css and js(html at public\final\index.html)
-gulp build
-gulp inject
-// html minify test - just test html minify(can not run well)
-gulp minifyhtml
-// minify css test
-gulp minify-css
-// minify js test
-gulp minify-js
+// minify and inject
+	// _index.sass need modify
+		background-image: url("../img/bg-default.jpg")
+		--> 
+		background-image: url("img/bg-default.jpg")
+	// build and css/js minify
+	gulp --env production build
+	// css/js inject and html minify
+	gulp inline
 // release
 // gulp --env production
 //publish contents to Github pages
