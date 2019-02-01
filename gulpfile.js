@@ -15,7 +15,7 @@ const debug = require('gulp-debug');
 // # gulp --env production
 const envOptions = {
   string: 'env',
-  default: { env: 'development' },
+  default: { env: 'development' }
 };
 
 var options = minimist(process.argv.slice(2), envOptions);
@@ -26,7 +26,7 @@ console.log(options);
 gulp.task('browserSync', () => {
   browserSync.init({
     server: { baseDir: './public' },
-    reloadDebounce: 2000,
+    reloadDebounce: 2000
   });
 });
 
@@ -63,8 +63,8 @@ gulp.task('copy', () => {
     .pipe(gulp.dest('./public/'))
     .pipe(
       browserSync.reload({
-        stream: true,
-      }),
+        stream: true
+      })
     );
 });
 
@@ -73,8 +73,8 @@ gulp.task('sass', () => {
   // PostCSS AutoPrefixer
   const processors = [
     autoprefixer({
-      browsers: ['last 5 version'],
-    }),
+      browsers: ['last 5 version']
+    })
   ];
 
   return gulp
@@ -85,21 +85,21 @@ gulp.task('sass', () => {
     .pipe(
       $.sass({
         outputStyle: 'nested',
-        includePaths: ['./node_modules/susy/sass'],		// addition include sass
-      }).on('error', $.sass.logError),
+        includePaths: ['./node_modules/susy/sass']// addition include sass
+      }).on('error', $.sass.logError)
     )
     .pipe($.postcss(processors))
-    .pipe($.if(options.env === 'production', $.cleanCss({compatibility: 'ie8'}))) // 假設開發環境則壓縮 CSS
+    .pipe($.if(options.env === 'production', $.cleanCss({ compatibility: 'ie8' }))) // 假設開發環境則壓縮 CSS
     .pipe($.sourcemaps.write('.'))
     .pipe(gulp.dest('./public/css'))
     .pipe(
       browserSync.reload({
-        stream: true,
-      }),
+        stream: true
+      })
     );
 });
 
-// clear pubic file 
+// clear pubic file
 gulp.task('clean', () => {
   return gulp.src(['./public'], { read: false }).pipe($.clean());
 });
@@ -162,30 +162,30 @@ gulp.task('vendorJs', () => {
 gulp.task('webpack', () => {
   return gulp
     .src('./source/js/all.js')
-    .pipe(webpack( {
-      watch: true,  // add watch
+    .pipe(webpack({
+      watch: true, // add watch
       mode: 'none', // add mode
       output: {
         filename: 'boundle.js'
-      } ,
+      },
       module: {
         rules: [
-            {
-              use: {
-                loader: 'babel-loader',
-                options: {
-                  presets: ['@babel/preset-env']
-                }
+          {
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env']
               }
             }
+          }
         ]
       }
-    } ))
-    .pipe($.if(options.env === 'production', 
+    }))
+    .pipe($.if(options.env === 'production',
       $.minify({
-        ext:{
-          src:'-debug.js',
-          min:'.js'
+        ext: {
+          src: '-debug.js',
+          min: '.js'
         }
       })
     ))
@@ -195,14 +195,14 @@ gulp.task('webpack', () => {
 // inject css/js and minify html
 gulp.task('inline', function () {
   return gulp.src('./public/*.html')
-      .pipe(debug())
-      .pipe($.inline())
-      .pipe(debug())
-      .pipe($.htmlmin({ 
-        collapseWhitespace: true,
-        removeComments: true
-      }))      
-      .pipe(gulp.dest('./public'));
+    .pipe(debug())
+    .pipe($.inline())
+    .pipe(debug())
+    .pipe($.htmlmin({
+      collapseWhitespace: true,
+      removeComments: true
+    }))
+    .pipe(gulp.dest('./public'));
 });
 
 // use ejs - include layout
@@ -220,6 +220,3 @@ gulp.task('default', ['copy', 'sass', 'webpack', 'browserSync', 'watch']);
 // gulp.task('build', gulpSequence('clean', 'copy', 'sass', 'vendorJs'));
 // add webpack-stream
 gulp.task('build', gulpSequence('clean', 'copy', 'sass', 'webpack'));
-
-
-
